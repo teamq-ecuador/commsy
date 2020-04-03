@@ -32,8 +32,8 @@ Vagrant.configure("2") do |config|
       # the path on the host to the actual folder. The second argument is
       # the path on the guest to mount the folder. And the optional third
       # argument is a set of non-required options.
-       machine_id.vm.synced_folder ".", "/var/www", type: "smb", smb_username: "GifUser" ,smb_password: "TeamGroupEcu", :mount_options => ["mfsymlinks,dir_mode=0777,file_mode=0777,vers=3.0"]
-       machine_id.vm.synced_folder ".", "/vagrant", type: "smb", smb_username: "GifUser" ,smb_password: "TeamGroupEcu", :mount_options => ["mfsymlinks,dir_mode=0777,file_mode=0777,vers=3.0"]
+       machine_id.vm.synced_folder ".", "/var/www", type: "smb", smb_username: "" ,smb_password: "", :mount_options => ["mfsymlinks,dir_mode=0777,file_mode=0777,vers=3.0"]
+       machine_id.vm.synced_folder ".", "/vagrant", type: "smb", smb_username: "" ,smb_password: "", :mount_options => ["mfsymlinks,dir_mode=0777,file_mode=0777,vers=3.0"]
 
       # Provider-specific configuration so you can fine-tune various
       # backing providers for Vagrant. These expose provider-specific options.
