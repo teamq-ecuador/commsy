@@ -1,16 +1,14 @@
 <?php
 namespace App\Search;
 
-use App\Search\QueryConditions\QueryConditionInterface;
 use App\Search\FilterConditions\FilterConditionInterface;
 use App\Search\FilterConditions\RoomFilterCondition;
-use FOS\ElasticaBundle\Finder\TransformedFinder;
-
-use App\Utils\UserService;
+use App\Search\QueryConditions\QueryConditionInterface;
 use App\Utils\ItemService;
-
-use Elastica\Query as Queries;
+use App\Utils\UserService;
 use Elastica\Aggregation as Aggregations;
+use Elastica\Query as Queries;
+use FOS\ElasticaBundle\Finder\TransformedFinder;
 
 class SearchManager
 {
@@ -137,7 +135,7 @@ class SearchManager
         $query->setQuery($boolQuery);
 
         // sort by activity
-        $sortArray = ['activity' => 'desc'];
+        $sortArray = ['activity' => ["order"=> 'desc', "unmapped_type" => "long"]];
 
         $query->setSort($sortArray);
 

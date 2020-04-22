@@ -22,7 +22,7 @@ fos_elastica:
             #password: %elastic_password%
 
     indexes:
-        commsy:
+        commsy_announcement:
             client: default
             finder: ~
             settings:
@@ -822,6 +822,9 @@ fos_elastica:
                             copy_to: fullName
                         fullName:
                             type: text
+                        modificationDate:
+                            type: date
+                            format: date_optional_time
                     persistence:
                         driver: orm
                         model: App\Entity\User
