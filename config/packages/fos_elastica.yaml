@@ -24,9 +24,7 @@ fos_elastica:
     indexes:
         commsy:
             client: default
-
             finder: ~
-
             settings:
                 analysis:
                     analyzer:
@@ -69,7 +67,6 @@ fos_elastica:
                         stop_en_filter:
                             type: stop
                             stopword: _english_
-
             types:
                 # Announcements
                 announcement:
@@ -150,9 +147,55 @@ fos_elastica:
                         provider: ~
                         listener: ~
 
+        commsy_date:
+            client: default
+            finder: ~
+            settings:
+                analysis:
+                    analyzer:
+                        commsy_analyzer:
+                            type: custom
+                            tokenizer: standard
+                            filter:
+                                - standard
+                                - lowercase
+                                - stop_de_filter
+                                - stop_en_filter
+                                - ngrams_filter
+                            char_filter:
+                                - html_strip
+
+                        html_strip_analyzer:
+                            type: custom
+                            tokenizer: standard
+                            filter:
+                                - standard
+                                - lowercase
+                                - stop_de_filter
+                                - stop_en_filter
+                            char_filter:
+                                - html_strip
+
+                    filter:
+                        ngrams_filter:
+                            type: ngram
+                            min_gram: 3
+                            max_gram: 25
+                            token_chars:
+                                - letter
+                                - digit
+
+                        stop_de_filter:
+                            type: stop
+                            stopword: _german_
+
+                        stop_en_filter:
+                            type: stop
+                            stopword: _english_
+            types:
                 # Dates
                 date:
-                    indexable_callback: ['@commsy.search.indexable_checker', 'isIndexable']
+                    indexable_callback: ['@commsy_date.search.indexable_checker', 'isIndexable']
                     _all:
                         enabled: false
                     properties:
@@ -232,9 +275,55 @@ fos_elastica:
                         provider: ~
                         listener: ~
 
+        commsy_discussion:
+            client: default
+            finder: ~
+            settings:
+                analysis:
+                    analyzer:
+                        commsy_analyzer:
+                            type: custom
+                            tokenizer: standard
+                            filter:
+                                - standard
+                                - lowercase
+                                - stop_de_filter
+                                - stop_en_filter
+                                - ngrams_filter
+                            char_filter:
+                                - html_strip
+
+                        html_strip_analyzer:
+                            type: custom
+                            tokenizer: standard
+                            filter:
+                                - standard
+                                - lowercase
+                                - stop_de_filter
+                                - stop_en_filter
+                            char_filter:
+                                - html_strip
+
+                    filter:
+                        ngrams_filter:
+                            type: ngram
+                            min_gram: 3
+                            max_gram: 25
+                            token_chars:
+                                - letter
+                                - digit
+
+                        stop_de_filter:
+                            type: stop
+                            stopword: _german_
+
+                        stop_en_filter:
+                            type: stop
+                            stopword: _english_
+            types:
                 # Discussions
                 discussion:
-                    indexable_callback: ['@commsy.search.indexable_checker', 'isIndexable']
+                    indexable_callback: ['@commsy_discussion.search.indexable_checker', 'isIndexable']
                     _all:
                         enabled: false
                     properties:
@@ -318,10 +407,55 @@ fos_elastica:
                         provider: ~
                         listener: ~
 
+        commsy_label:
+            client: default
+            finder: ~
+            settings:
+                analysis:
+                    analyzer:
+                        commsy_analyzer:
+                            type: custom
+                            tokenizer: standard
+                            filter:
+                                - standard
+                                - lowercase
+                                - stop_de_filter
+                                - stop_en_filter
+                                - ngrams_filter
+                            char_filter:
+                                - html_strip
 
+                        html_strip_analyzer:
+                            type: custom
+                            tokenizer: standard
+                            filter:
+                                - standard
+                                - lowercase
+                                - stop_de_filter
+                                - stop_en_filter
+                            char_filter:
+                                - html_strip
+
+                    filter:
+                        ngrams_filter:
+                            type: ngram
+                            min_gram: 3
+                            max_gram: 25
+                            token_chars:
+                                - letter
+                                - digit
+
+                        stop_de_filter:
+                            type: stop
+                            stopword: _german_
+
+                        stop_en_filter:
+                            type: stop
+                            stopword: _english_
+            types:
                 # Labels (Groups, Topics, Institutions)
                 label:
-                    indexable_callback: ['@commsy.search.indexable_checker', 'isIndexable']
+                    indexable_callback: ['@commsy_label.search.indexable_checker', 'isIndexable']
                     _all:
                         enabled: false
                     properties:
@@ -380,9 +514,55 @@ fos_elastica:
                         provider: ~
                         listener: ~
 
+        commsy_room:
+            client: default
+            finder: ~
+            settings:
+                analysis:
+                    analyzer:
+                        commsy_analyzer:
+                            type: custom
+                            tokenizer: standard
+                            filter:
+                                - standard
+                                - lowercase
+                                - stop_de_filter
+                                - stop_en_filter
+                                - ngrams_filter
+                            char_filter:
+                                - html_strip
+
+                        html_strip_analyzer:
+                            type: custom
+                            tokenizer: standard
+                            filter:
+                                - standard
+                                - lowercase
+                                - stop_de_filter
+                                - stop_en_filter
+                            char_filter:
+                                - html_strip
+
+                    filter:
+                        ngrams_filter:
+                            type: ngram
+                            min_gram: 3
+                            max_gram: 25
+                            token_chars:
+                                - letter
+                                - digit
+
+                        stop_de_filter:
+                            type: stop
+                            stopword: _german_
+
+                        stop_en_filter:
+                            type: stop
+                            stopword: _english_
+            types:
                 # Rooms
                 room:
-                    indexable_callback: ['@commsy.search.indexable_checker', 'isIndexable']
+                    indexable_callback: ['@commsy_room.search.indexable_checker', 'isIndexable']
                     _all:
                         enabled: false
                     properties:
@@ -433,9 +613,55 @@ fos_elastica:
                         provider: ~
                         listener: ~
 
+        commsy_todo:
+            client: default
+            finder: ~
+            settings:
+                analysis:
+                    analyzer:
+                        commsy_analyzer:
+                            type: custom
+                            tokenizer: standard
+                            filter:
+                                - standard
+                                - lowercase
+                                - stop_de_filter
+                                - stop_en_filter
+                                - ngrams_filter
+                            char_filter:
+                                - html_strip
+
+                        html_strip_analyzer:
+                            type: custom
+                            tokenizer: standard
+                            filter:
+                                - standard
+                                - lowercase
+                                - stop_de_filter
+                                - stop_en_filter
+                            char_filter:
+                                - html_strip
+
+                    filter:
+                        ngrams_filter:
+                            type: ngram
+                            min_gram: 3
+                            max_gram: 25
+                            token_chars:
+                                - letter
+                                - digit
+
+                        stop_de_filter:
+                            type: stop
+                            stopword: _german_
+
+                        stop_en_filter:
+                            type: stop
+                            stopword: _english_
+            types:
                 # Todos
                 todo:
-                    indexable_callback: ['@commsy.search.indexable_checker', 'isIndexable']
+                    indexable_callback: ['@commsy_todo.search.indexable_checker', 'isIndexable']
                     _all:
                         enabled: false
                     properties:
@@ -532,9 +758,55 @@ fos_elastica:
                         provider: ~
                         listener: ~
 
+        commsy_user:
+            client: default
+            finder: ~
+            settings:
+                analysis:
+                    analyzer:
+                        commsy_analyzer:
+                            type: custom
+                            tokenizer: standard
+                            filter:
+                                - standard
+                                - lowercase
+                                - stop_de_filter
+                                - stop_en_filter
+                                - ngrams_filter
+                            char_filter:
+                                - html_strip
+
+                        html_strip_analyzer:
+                            type: custom
+                            tokenizer: standard
+                            filter:
+                                - standard
+                                - lowercase
+                                - stop_de_filter
+                                - stop_en_filter
+                            char_filter:
+                                - html_strip
+
+                    filter:
+                        ngrams_filter:
+                            type: ngram
+                            min_gram: 3
+                            max_gram: 25
+                            token_chars:
+                                - letter
+                                - digit
+
+                        stop_de_filter:
+                            type: stop
+                            stopword: _german_
+
+                        stop_en_filter:
+                            type: stop
+                            stopword: _english_
+            types:
                 # User
                 user:
-                    indexable_callback: ['@commsy.search.indexable_checker', 'isIndexable']
+                    indexable_callback: ['@commsy_user.search.indexable_checker', 'isIndexable']
                     _all:
                         enabled: false
                     properties:
@@ -558,9 +830,55 @@ fos_elastica:
                         provider: ~
                         listener: ~
 
+        commsy_material:
+            client: default
+            finder: ~
+            settings:
+                analysis:
+                    analyzer:
+                        commsy_analyzer:
+                            type: custom
+                            tokenizer: standard
+                            filter:
+                                - standard
+                                - lowercase
+                                - stop_de_filter
+                                - stop_en_filter
+                                - ngrams_filter
+                            char_filter:
+                                - html_strip
+
+                        html_strip_analyzer:
+                            type: custom
+                            tokenizer: standard
+                            filter:
+                                - standard
+                                - lowercase
+                                - stop_de_filter
+                                - stop_en_filter
+                            char_filter:
+                                - html_strip
+
+                    filter:
+                        ngrams_filter:
+                            type: ngram
+                            min_gram: 3
+                            max_gram: 25
+                            token_chars:
+                                - letter
+                                - digit
+
+                        stop_de_filter:
+                            type: stop
+                            stopword: _german_
+
+                        stop_en_filter:
+                            type: stop
+                            stopword: _english_
+            types:
                 # Materials
                 material:
-                    indexable_callback: ['@commsy.search.indexable_checker', 'isIndexable']
+                    indexable_callback: ['@commsy_material.search.indexable_checker', 'isIndexable']
                     _all:
                         enabled: false
                     properties:

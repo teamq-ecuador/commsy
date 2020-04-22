@@ -621,6 +621,32 @@ services:
     commsy.search.indexable_checker:
         alias: App\Search\IndexableChecker
 
+
+    commsy_date.search.indexable_checker:
+        alias: App\Search\IndexableChecker
+
+
+    commsy_discussion.search.indexable_checker:
+        alias: App\Search\IndexableChecker
+
+    commsy_label.search.indexable_checker:
+        alias: App\Search\IndexableChecker
+
+
+    commsy_room.search.indexable_checker:
+        alias: App\Search\IndexableChecker
+
+
+    commsy_todo.search.indexable_checker:
+        alias: App\Search\IndexableChecker
+
+
+    commsy_user.search.indexable_checker:
+        alias: App\Search\IndexableChecker
+
+    commsy_material.search.indexable_checker:
+        alias: App\Search\IndexableChecker
+
     App\Search\IndexableChecker:
         autowire: true
         autoconfigure: true
