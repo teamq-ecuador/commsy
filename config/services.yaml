@@ -621,6 +621,7 @@ services:
     App\Search\MultiIndex:
         arguments:
             $name: 'commsy'
+            $client: '@fos_elastica.client.default'
         calls:
             - [ addIndices, [[
                                  '@fos_elastica.index.commsy_announcement',
