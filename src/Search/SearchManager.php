@@ -1,16 +1,15 @@
 <?php
+
 namespace App\Search;
 
-use App\Search\QueryConditions\QueryConditionInterface;
 use App\Search\FilterConditions\FilterConditionInterface;
 use App\Search\FilterConditions\RoomFilterCondition;
-use FOS\ElasticaBundle\Finder\TransformedFinder;
-
-use App\Utils\UserService;
+use App\Search\QueryConditions\QueryConditionInterface;
 use App\Utils\ItemService;
-
-use Elastica\Query as Queries;
+use App\Utils\UserService;
 use Elastica\Aggregation as Aggregations;
+use Elastica\Query as Queries;
+use FOS\ElasticaBundle\Finder\TransformedFinder;
 
 class SearchManager
 {
@@ -35,11 +34,6 @@ class SearchManager
         $this->commsyFinder = $commsyFinder;
         $this->userService = $userService;
         $this->itemService = $itemService;
-    }
-
-    public function addFilterCondition(FilterConditionInterface $filterCondition)
-    {
-        $this->filterConditions[] = $filterCondition;
     }
 
     public function addQueryCondition(QueryConditionInterface $queryCondition)
@@ -99,6 +93,73 @@ class SearchManager
         return $this->commsyFinder->createPaginatorAdapter($query);
     }
 
+    /**
+     * Creates & returns a function score query for the context based on the registered query conditions,
+     * or if there are no query conditions, returns a query that matches everything
+     *
+     * @return Queries\FunctionScore|Queries\MatchAll
+     */
+    private function createContextQuery()
+    {
+        if (empty($this->queryConditions)) {
+            return new Queries\MatchAll();
+        }
+
+        $boolQuery = new Queries\BoolQuery();
+
+        foreach ($this->queryConditions as $queryCondition) {
+            /** @var QueryConditionInterface $queryCondition */
+            $conditions = $queryCondition->getConditions();
+            foreach ($conditions as $condition) {
+                switch ($queryCondition->getOperator()) {
+                    case QueryConditionInterface::BOOL_MUST:
+                        $boolQuery->addMust($condition);
+                        break;
+                    case QueryConditionInterface::BOOL_SHOULD:
+                        $boolQuery->addShould($condition);
+                        break;
+                };
+            }
+        }
+
+        $functionScoreQuery = new Queries\FunctionScore();
+        $functionScoreQuery->setQuery($boolQuery);
+        $functionScoreQuery->setScoreMode(Queries\FunctionScore::SCORE_MODE_SUM);
+        $functionScoreQuery->setBoostMode(Queries\FunctionScore::BOOST_MODE_SUM);
+
+        $functionScoreQuery->addDecayFunction(Queries\FunctionScore::DECAY_GAUSS, 'modificationDate', 'now', '30d', null, 0.1, 15);
+
+        return $functionScoreQuery;
+    }
+
+    /**
+     * Creates a Terms or Range Filter to restrict the search to contexts, the
+     * user is allowed to access
+     *
+     * @return Queries\BoolQuery
+     */
+    private function createContextFilter()
+    {
+        $boolQuery = new Queries\BoolQuery();
+
+        foreach ($this->filterConditions as $filterCondition) {
+            /** @var FilterConditionInterface $filterCondition */
+            $conditions = $filterCondition->getConditions();
+            foreach ($conditions as $condition) {
+                switch ($filterCondition->getOperator()) {
+                    case FilterConditionInterface::BOOL_MUST:
+                        $boolQuery->addMust($condition);
+                        break;
+                    case FilterConditionInterface::BOOL_SHOULD:
+                        $boolQuery->addShould($condition);
+                        break;
+                };
+            }
+        }
+
+        return $boolQuery;
+    }
+
     public function getLinkedItemResults()
     {
         // create our basic query
@@ -137,11 +198,16 @@ class SearchManager
         $query->setQuery($boolQuery);
 
         // sort by activity
-        $sortArray = ['activity' => 'desc'];
+        $sortArray = ['activity' => ["order" => 'desc', "unmapped_type" => "long"]];
 
         $query->setSort($sortArray);
 
         return $this->commsyFinder->find($query, 50);
+    }
+
+    public function addFilterCondition(FilterConditionInterface $filterCondition)
+    {
+        $this->filterConditions[] = $filterCondition;
     }
 
     public function createExcludeFilter($itemId)
@@ -170,72 +236,5 @@ class SearchManager
         }
 
         return $countsByKey;
-    }
-
-    /**
-     * Creates a Terms or Range Filter to restrict the search to contexts, the
-     * user is allowed to access
-     *
-     * @return Queries\BoolQuery
-     */
-    private function createContextFilter()
-    {
-        $boolQuery = new Queries\BoolQuery();
-
-        foreach ($this->filterConditions as $filterCondition) {
-            /** @var FilterConditionInterface $filterCondition */
-            $conditions = $filterCondition->getConditions();
-            foreach ($conditions as $condition) {
-                switch ($filterCondition->getOperator()) {
-                    case FilterConditionInterface::BOOL_MUST:
-                        $boolQuery->addMust($condition);
-                        break;
-                    case FilterConditionInterface::BOOL_SHOULD:
-                        $boolQuery->addShould($condition);
-                        break;
-                };
-            }
-        }
-
-        return $boolQuery;
-    }
-
-    /**
-     * Creates & returns a function score query for the context based on the registered query conditions,
-     * or if there are no query conditions, returns a query that matches everything
-     *
-     * @return Queries\FunctionScore|Queries\MatchAll
-     */
-    private function createContextQuery()
-    {
-        if (empty($this->queryConditions)) {
-            return new Queries\MatchAll();
-        }
-
-        $boolQuery = new Queries\BoolQuery();
-
-        foreach ($this->queryConditions as $queryCondition) {
-            /** @var QueryConditionInterface $queryCondition */
-            $conditions = $queryCondition->getConditions();
-            foreach ($conditions as $condition) {
-                switch ($queryCondition->getOperator()) {
-                    case QueryConditionInterface::BOOL_MUST:
-                        $boolQuery->addMust($condition);
-                        break;
-                    case QueryConditionInterface::BOOL_SHOULD:
-                        $boolQuery->addShould($condition);
-                        break;
-                };
-            }
-        }
-
-        $functionScoreQuery = new Queries\FunctionScore();
-        $functionScoreQuery->setQuery($boolQuery);
-        $functionScoreQuery->setScoreMode(Queries\FunctionScore::SCORE_MODE_SUM);
-        $functionScoreQuery->setBoostMode(Queries\FunctionScore::BOOST_MODE_SUM);
-
-        $functionScoreQuery->addDecayFunction(Queries\FunctionScore::DECAY_GAUSS, 'modificationDate', 'now', '30d', null, 0.1, 15);
-
-        return $functionScoreQuery;
     }
 }
